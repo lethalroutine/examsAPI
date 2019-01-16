@@ -1,0 +1,4 @@
+/data/exams
+/exams/migrations
+__pycache__
+/db.sqlite3
