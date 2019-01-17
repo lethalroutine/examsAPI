@@ -18,3 +18,9 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ('id', 'exam', 'task_number', 'number_of_points')
+
+
+class ExamFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExamFile
+        fields = ('id', 'exam', 'file', 'file_name')
