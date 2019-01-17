@@ -2,59 +2,37 @@ from django.http import Http404, HttpResponse, JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import ParseError
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.parsers import FileUploadParser
 from exams.models import Exam, ExamFile, Task
 from exams.serializers import ExamSerializer,TaskSerializer
 from wsgiref.util import FileWrapper
+
 import os
 
 
-class ExamList(APIView):
+class ExamList(generics.ListAPIView):
     """
     View to list all sent exams
     """
-    def get(self, request, format=None):
-        exams = Exam.objects.all()
-        serializer = ExamSerializer(exams, many=True)
-        return Response(serializer.data)
+    queryset = Exam.objects.all()
+    serializer_class = ExamSerializer
 
 
-class ExamDetail(APIView):
+class ExamDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     View to get the details of sent exam with possibility to update
     """
-    def get_object(self, pk):
-        try:
-            return Exam.objects.get(pk=pk)
-        except Exam.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk, format=None):
-        exam = Exam.objects.get(pk=pk)
-        serializer = ExamSerializer(exam)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        exam = self.get_object(pk=pk)
-        serializer = ExamSerializer(exam, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    queryset = Exam.objects.all()
+    serializer_class = ExamSerializer
 
 
-class ExamCreate(APIView):
+class ExamCreate(generics.CreateAPIView):
     """
     View to create exam
     """
-    def post(self, request):
-        serializer = ExamSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    queryset = Exam.objects.all()
+    serializer_class = ExamSerializer
 
 
 class ExamFileDetail(APIView):
@@ -93,34 +71,10 @@ class ExamFileDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class TaskDetail(APIView):
+class TaskDetail(generics.RetrieveUpdateDestroyAPIView,
+                 generics.CreateAPIView):
     """
     View to assign points to exam task
     """
-    def get_object(self, pk):
-        try:
-            return Exam.objects.get(pk=pk)
-        except Exam.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk):
-        if len(Task.objects.filter(pk=pk)) == 0:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        task = Task.objects.get(pk=pk)
-        serializer = TaskSerializer(task)
-        return Response(serializer.data)
-
-    def post(self, request, pk):
-        serializer = TaskSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, pk):
-        task = self.get_object(pk=pk)
-        serializer = TaskSerializer(task, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
