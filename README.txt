@@ -10,7 +10,12 @@ From within main directory type:
 python manage.py makemigrations
 python manage.py migrate
  
-Its needed create manually 'Owner' entry either from admin panel or using django shell.
+Its needed to create superuser manually, type:
+python manage.py createsuperuser
+
+and follow the instructions, remember credentials to log into Browsable API. 
+Not registered user has read only permissions.
+
 To run local server type:
 python manage.py runserver
 

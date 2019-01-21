@@ -1,5 +1,5 @@
 from django.urls import path
-from exams import views
+from . import views
 
 urlpatterns = [
     path('exams/', views.ExamList.as_view()),
@@ -10,4 +10,6 @@ urlpatterns = [
     path('exams/create', views.ExamCreate.as_view()),
     path('exams/tasks/<int:pk>', views.TaskDetail.as_view()),
     path('exams/tasks/', views.TaskList.as_view()),
+    path('exams/users/', views.UserList.as_view()),
+    path('exams/users/<int:pk>', views.UserDetail.as_view()),
 ]
