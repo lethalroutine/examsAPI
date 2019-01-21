@@ -1,17 +1,22 @@
 from rest_framework import serializers
-from exams.models import Exam, Owner, Task, ExamFile
+from .models import Exam, Task, ExamFile
+from django.contrib.auth.models import User
 
 
 class ExamSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+
     class Meta:
         model = Exam
-        fields = ('id', 'owner', 'grade', 'students_name')
+        fields = ('id', 'grade', 'students_name', 'owner')
 
 
-class OwnerSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    exams = serializers.PrimaryKeyRelatedField(many=True, queryset=Exam.objects.all())
+
     class Meta:
-        model = Owner
-        fields = ('id', 'username')
+        model = User
+        fields = ('id', 'username', 'exams')
 
 
 class TaskSerializer(serializers.ModelSerializer):

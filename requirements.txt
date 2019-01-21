@@ -1,2 +1,6 @@
-django
-djangorestframework
+Django==2.1.5
+django-filter==2.0.0
+django-filters==0.2.1
+djangorestframework==3.9.0
+djangorestframework-filters==1.0.0.dev0
+pytz==2018.9
