@@ -5,6 +5,7 @@ from .models import Exam, ExamFile, Task
 from django.contrib.auth.models import User
 from .serializers import ExamSerializer, TaskSerializer, ExamFileSerializer, UserSerializer
 from wsgiref.util import FileWrapper
+from .permissions import IsOwnerOrReadOnly, IsOwnerOrReadOnlyFile
 
 
 class ExamList(generics.ListAPIView):
@@ -13,10 +14,6 @@ class ExamList(generics.ListAPIView):
     """
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
 
 
 class ExamDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -25,7 +22,8 @@ class ExamDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly)
 
 
 class ExamCreate(generics.CreateAPIView):
@@ -34,7 +32,8 @@ class ExamCreate(generics.CreateAPIView):
     """
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,
+                          IsOwnerOrReadOnly)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -46,7 +45,8 @@ class ExamFileUpload(generics.CreateAPIView):
     """
     queryset = ExamFile.objects.all()
     serializer_class = ExamFileSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,
+                          IsOwnerOrReadOnlyFile)
 
 
 class ExamFileDownload(APIView):
@@ -55,7 +55,7 @@ class ExamFileDownload(APIView):
     """
     queryset = ExamFile.objects.all()
     serializer_class = ExamFileSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk):
         exam_file = ExamFile.objects.get(pk=pk)
@@ -73,7 +73,8 @@ class ExamFileUpdate(generics.UpdateAPIView,
     """
     queryset = ExamFile.objects.all()
     serializer_class = ExamFileSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,
+                          IsOwnerOrReadOnlyFile)
 
 
 class TaskDetail(generics.RetrieveUpdateDestroyAPIView,
@@ -92,7 +93,6 @@ class TaskList(generics.ListAPIView):
     """
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class UserList(generics.ListAPIView):
